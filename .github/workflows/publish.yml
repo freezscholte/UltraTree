@@ -30,7 +30,7 @@ jobs:
 
       - name: Build module
         shell: powershell
-        run: Invoke-Build -File .\Module\src\UltraTree.build.ps1 -Task Build
+        run: Invoke-Build -File .\Module\src\UltraTree.build.ps1 -Task Clean, Build
 
       - name: Publish to PowerShell Gallery
         shell: powershell
