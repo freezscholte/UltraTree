@@ -40,7 +40,10 @@ The integration allows you to:
 Minimal script for quick deployment:
 
 ```powershell
-# UltraTree NinjaOne Script
+# UltraTree NinjaOne Script - Install if needed, then run
+if (-not (Get-Module -ListAvailable -Name UltraTree)) {
+    Install-Module -Name UltraTree -Scope AllUsers -Force -AllowClobber
+}
 Import-Module UltraTree -Force
 
 $results = Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50
@@ -68,8 +71,12 @@ Production-ready script with error handling and disk alerts:
 #>
 
 try {
-    # Import the module
-    Import-Module UltraTree -ErrorAction Stop
+    # Install module if not present, then force import
+    if (-not (Get-Module -ListAvailable -Name UltraTree)) {
+        Write-Output "Installing UltraTree from PowerShell Gallery..."
+        Install-Module -Name UltraTree -Scope AllUsers -Force -AllowClobber
+    }
+    Import-Module UltraTree -Force -ErrorAction Stop
 
     # Run the scan
     $results = Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50
@@ -129,6 +136,9 @@ catch {
 Faster scan without duplicate detection:
 
 ```powershell
+if (-not (Get-Module -ListAvailable -Name UltraTree)) {
+    Install-Module -Name UltraTree -Scope AllUsers -Force -AllowClobber
+}
 Import-Module UltraTree -Force
 
 $results = Get-FolderSizes -AllDrives -MaxDepth 3 -Top 30
