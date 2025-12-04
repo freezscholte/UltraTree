@@ -22,6 +22,8 @@
         'PSUseConsistentIndentation'
         'PSAlignAssignmentStatement'
         'PSPlaceCloseBrace'
+        'PSUseShouldProcessForStateChangingFunctions'  # New-Html* functions only return strings
+        'PSUseSingularNouns'                           # Get-FolderSizes is intentionally plural
     )
     #________________________________________
     #Rules
