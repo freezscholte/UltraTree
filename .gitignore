@@ -1,0 +1,35 @@
+# Claude Code
+.mcp.json
+
+# Build artifacts
+Module/src/Artifacts/
+Module/src/Archive/
+
+# MkDocs build output
+Module/site/
+
+# Test results
+Module/src/testOutput/
+*.TestResults.xml
+
+# PowerShell
+*.ps1xml.bak
+
+# Python (MkDocs)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log

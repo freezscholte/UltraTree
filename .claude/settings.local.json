@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.catesta.dev)",
+      "mcp__Ref__ref_search_documentation",
+      "Bash(pwsh -Command \"(Get-Module Catesta -ListAvailable).RequiredModules\")",
+      "Bash(pwsh -Command \"Get-Module platyPS -ListAvailable | Select-Object Name, Version, ModuleBase\":*)",
+      "Bash(pwsh:*)",
+      "Bash(dir /s /b Module)",
+      "Bash(Get-Content UltraTree.ps1)",
+      "Bash(Select-String -Pattern \"^function\\s+\\w+\" -Raw)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "exa",
+    "Ref"
+  ]
+}

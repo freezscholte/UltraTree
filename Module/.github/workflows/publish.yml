@@ -1,0 +1,55 @@
+# Publish to PowerShell Gallery on release
+# https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Publish to PowerShell Gallery
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  publish:
+    name: Publish Module
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install NuGet
+        shell: powershell
+        run: Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
+      - name: Install PowerShellGet
+        shell: powershell
+        run: Install-Module -Name PowerShellGet -Repository PSGallery -Force
+
+      - name: Bootstrap dependencies
+        shell: powershell
+        run: ./actions_bootstrap.ps1
+
+      - name: Build module
+        shell: powershell
+        run: Invoke-Build -File .\src\UltraTree.build.ps1 -Task Build
+
+      - name: Publish to PowerShell Gallery
+        shell: powershell
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          $modulePath = ".\src\Artifacts\UltraTree"
+
+          # Verify module exists
+          if (-not (Test-Path $modulePath)) {
+            Write-Error "Module not found at $modulePath"
+            exit 1
+          }
+
+          # Get module version
+          $manifest = Import-PowerShellDataFile "$modulePath\UltraTree.psd1"
+          Write-Output "Publishing UltraTree version $($manifest.ModuleVersion)"
+
+          # Publish
+          Publish-Module -Path $modulePath -NuGetApiKey $env:PSGALLERY_API_KEY -Verbose
+
+          Write-Output "Successfully published UltraTree $($manifest.ModuleVersion) to PowerShell Gallery"

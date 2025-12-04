@@ -1,0 +1,29 @@
+# MkDocs Configuration
+# https://www.mkdocs.org/user-guide/configuration/
+
+site_name: UltraTree
+site_url: https://ultratree.readthedocs.io/
+repo_url: https://github.com/freezscholte/UltraTree
+repo_name: UltraTree
+site_description: Ultra-fast PowerShell disk space analyzer with duplicate detection, cleanup suggestions, and beautiful HTML reports
+site_author: Jan Scholte
+
+theme:
+  name: readthedocs
+  locale: en
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Functions:
+    - Get-FolderSizes: functions/get-foldersizes.md
+    - ConvertTo-NinjaOneHtml: functions/convertto-ninjaonehtml.md
+  - NinjaOne Integration: ninjaone-integration.md
+  - Configuration: configuration.md
+  - Change Log: CHANGELOG.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables
