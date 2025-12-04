@@ -1,6 +1,6 @@
-#UltraTree - Lightning-Fast Disk Space Analysis
+# UltraTree - Lightning-Fast Disk Space Analysis
 
-  ###A powerful PowerShell disk scanner that goes beyond traditional tree-size tools:
+  ### A powerful PowerShell disk scanner that goes beyond traditional tree-size tools:
 
   ✨ Key Features:
   - ⚡ Ultra-fast scanning using USN Journal / MFT enumeration
