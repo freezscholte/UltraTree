@@ -26,18 +26,18 @@ jobs:
 
       - name: Bootstrap dependencies
         shell: powershell
-        run: ./actions_bootstrap.ps1
+        run: ./Module/actions_bootstrap.ps1
 
       - name: Build module
         shell: powershell
-        run: Invoke-Build -File .\src\UltraTree.build.ps1 -Task Build
+        run: Invoke-Build -File .\Module\src\UltraTree.build.ps1 -Task Build
 
       - name: Publish to PowerShell Gallery
         shell: powershell
         env:
           PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
         run: |
-          $modulePath = ".\src\Artifacts\UltraTree"
+          $modulePath = ".\Module\src\Artifacts\UltraTree"
 
           # Verify module exists
           if (-not (Test-Path $modulePath)) {
@@ -46,7 +46,7 @@ jobs:
           }
 
           # Get module version
-          $manifest = Import-PowerShellDataFile "$modulePath\UltraTree.psd1"
+          $manifest = Import-PowerShellDataFile (Join-Path $modulePath "UltraTree.psd1")
           Write-Output "Publishing UltraTree version $($manifest.ModuleVersion)"
 
           # Publish
