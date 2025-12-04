@@ -1,5 +1,9 @@
 # UltraTree
 
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/UltraTree)](https://www.powershellgallery.com/packages/UltraTree)
+[![Documentation](https://img.shields.io/badge/docs-readthedocs-blue)](https://ultratree.readthedocs.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 ### Lightning-Fast Disk Space Analysis for Windows
 
 A powerful PowerShell disk scanner that goes beyond traditional tree-size tools:
@@ -70,7 +74,8 @@ $html | Ninja-Property-Set-Piped treesize
 
 ## Documentation
 
-**[Full Documentation](Module/README.md)** - Complete reference including:
+**[Read the Docs](https://ultratree.readthedocs.io/)** | **[GitHub Docs](Module/README.md)**
+
 - All parameters and options
 - Return object structure
 - NinjaOne setup guide (custom fields, scripts, scheduling, alerts)
