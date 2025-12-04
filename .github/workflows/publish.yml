@@ -37,14 +37,19 @@ jobs:
         env:
           PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
         run: |
-          $modulePath = ".\Module\src\Artifacts"
+          $artifactsPath = ".\Module\src\Artifacts"
+          $modulePath = ".\Module\src\Publish\UltraTree"
 
-          # Verify module exists
-          if (-not (Test-Path "$modulePath\UltraTree.psd1")) {
-            Write-Error "Module manifest not found at $modulePath"
-            Get-ChildItem $modulePath -Recurse | ForEach-Object { Write-Output $_.FullName }
+          # Verify build artifacts exist
+          if (-not (Test-Path "$artifactsPath\UltraTree.psd1")) {
+            Write-Error "Module manifest not found at $artifactsPath"
+            Get-ChildItem $artifactsPath -Recurse | ForEach-Object { Write-Output $_.FullName }
             exit 1
           }
+
+          # Create publish folder with module name (required by Publish-Module)
+          New-Item -Path $modulePath -ItemType Directory -Force | Out-Null
+          Copy-Item -Path "$artifactsPath\*" -Destination $modulePath -Recurse -Force
 
           # Get module version
           $manifest = Import-PowerShellDataFile "$modulePath\UltraTree.psd1"
