@@ -105,27 +105,29 @@ function Get-FolderSizes {
         if ($ExcludeDrives.Count -gt 0) {
             $excludeNormalized = $ExcludeDrives | ForEach-Object { $_.TrimEnd(':').ToUpper() + ':' }
             $allFixed | Where-Object { $_ -notin $excludeNormalized }
-        } else {
+        }
+        else {
             $allFixed
         }
-    } else {
+    }
+    else {
         @("$DriveLetter`:")
     }
 
     # Prepare category patterns for C#
-    $categoryPatterns = $script:CleanupCategories | ForEach-Object { ,$_.Patterns }
+    $categoryPatterns = $script:CleanupCategories | ForEach-Object { , $_.Patterns }
     $categoryNames = $script:CleanupCategories | ForEach-Object { $_.Name }
 
     $allResults = [PSCustomObject]@{
-        Items = [System.Collections.Generic.List[object]]::new()
-        FileTypes = [System.Collections.Generic.List[object]]::new()
-        CleanupSuggestions = [System.Collections.Generic.List[object]]::new()
-        Duplicates = [System.Collections.Generic.List[object]]::new()
-        DriveInfo = [System.Collections.Generic.List[object]]::new()
+        Items                = [System.Collections.Generic.List[object]]::new()
+        FileTypes            = [System.Collections.Generic.List[object]]::new()
+        CleanupSuggestions   = [System.Collections.Generic.List[object]]::new()
+        Duplicates           = [System.Collections.Generic.List[object]]::new()
+        DriveInfo            = [System.Collections.Generic.List[object]]::new()
         TotalDuplicateWasted = 0
-        TotalFiles = 0
-        TotalFolders = 0
-        TotalErrorCount = 0
+        TotalFiles           = 0
+        TotalFolders         = 0
+        TotalErrorCount      = 0
     }
 
     foreach ($drive in $drivesToProcess) {
@@ -156,12 +158,12 @@ function Get-FolderSizes {
 
         # Add drive info
         $allResults.DriveInfo.Add([PSCustomObject]@{
-            Drive = $drive
-            TotalSize = $scanResult.TotalDriveSize
-            UsedSpace = $scanResult.TotalUsedSpace
-            FreeSpace = $scanResult.TotalFreeSpace
-            UsedPercent = [math]::Round(($scanResult.TotalUsedSpace / $scanResult.TotalDriveSize) * 100, 1)
-        })
+                Drive       = $drive
+                TotalSize   = $scanResult.TotalDriveSize
+                UsedSpace   = $scanResult.TotalUsedSpace
+                FreeSpace   = $scanResult.TotalFreeSpace
+                UsedPercent = [math]::Round(($scanResult.TotalUsedSpace / $scanResult.TotalDriveSize) * 100, 1)
+            })
 
         # Aggregate totals
         $allResults.TotalFiles += $scanResult.TotalFiles
@@ -173,46 +175,46 @@ function Get-FolderSizes {
             $minValidDate = [DateTime]::new(1980, 1, 1)
             $lastMod = if ($item.LastModified -gt $minValidDate) { $item.LastModified.ToString("yyyy-MM-dd") } else { "" }
             $allResults.Items.Add([PSCustomObject]@{
-                Drive = $drive
-                Path = $item.Path
-                Size = Format-ByteSize -Bytes $item.Size
-                SizeBytes = $item.Size
-                IsDirectory = $item.IsDirectory
-                LastModified = $lastMod
-            })
+                    Drive        = $drive
+                    Path         = $item.Path
+                    Size         = Format-ByteSize -Bytes $item.Size
+                    SizeBytes    = $item.Size
+                    IsDirectory  = $item.IsDirectory
+                    LastModified = $lastMod
+                })
         }
 
         # Add file types
         foreach ($ft in $scanResult.FileTypes) {
             $allResults.FileTypes.Add([PSCustomObject]@{
-                Drive = $drive
-                Extension = $ft.Extension
-                TotalSize = $ft.TotalSize
-                FileCount = $ft.FileCount
-            })
+                    Drive     = $drive
+                    Extension = $ft.Extension
+                    TotalSize = $ft.TotalSize
+                    FileCount = $ft.FileCount
+                })
         }
 
         # Add cleanup suggestions
         foreach ($sug in $scanResult.CleanupSuggestions) {
             $allResults.CleanupSuggestions.Add([PSCustomObject]@{
-                Drive = $drive
-                Path = $sug.Path
-                Category = $sug.Category
-                Size = $sug.Size
-                Description = $sug.Description
-            })
+                    Drive       = $drive
+                    Path        = $sug.Path
+                    Category    = $sug.Category
+                    Size        = $sug.Size
+                    Description = $sug.Description
+                })
         }
 
         # Add duplicates
         if ($FindDuplicates -and $scanResult.Duplicates -and $scanResult.Duplicates.Groups) {
             foreach ($group in $scanResult.Duplicates.Groups) {
                 $allResults.Duplicates.Add([PSCustomObject]@{
-                    Drive = $drive
-                    Hash = $group.Hash
-                    FileSize = $group.FileSize
-                    Files = $group.Files
-                    WastedSpace = $group.WastedSpace
-                })
+                        Drive       = $drive
+                        Hash        = $group.Hash
+                        FileSize    = $group.FileSize
+                        Files       = $group.Files
+                        WastedSpace = $group.WastedSpace
+                    })
             }
             $allResults.TotalDuplicateWasted += $scanResult.Duplicates.TotalWastedSpace
         }

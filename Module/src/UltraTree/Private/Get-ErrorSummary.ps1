@@ -10,8 +10,8 @@ function Get-ErrorSummary {
 
     $byCategory = $script:ErrorLog | Group-Object -Property Category
     $summary = ($byCategory | ForEach-Object {
-        "$($_.Count) $($_.Name)"
-    }) -join ", "
+            "$($_.Count) $($_.Name)"
+        }) -join ", "
 
     return "$total errors: $summary"
 }

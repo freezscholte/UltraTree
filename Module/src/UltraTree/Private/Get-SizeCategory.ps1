@@ -14,10 +14,10 @@ function Get-SizeCategory {
 
     $cfg = $script:Config.SizeCategories
     switch ($SizeBytes) {
-        { $_ -gt $cfg.Danger }  { return "danger" }
+        { $_ -gt $cfg.Danger } { return "danger" }
         { $_ -gt $cfg.Warning } { return "warning" }
-        { $_ -gt $cfg.Other }   { return "other" }
+        { $_ -gt $cfg.Other } { return "other" }
         { $_ -gt $cfg.Unknown } { return "unknown" }
-        default                 { return "success" }
+        default { return "success" }
     }
 }

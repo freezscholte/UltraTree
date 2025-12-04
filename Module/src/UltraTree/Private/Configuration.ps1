@@ -2,20 +2,20 @@
 # Centralized configuration with nested theme/thresholds
 
 $script:Config = @{
-    Version = "1.0.0"
+    Version        = "1.0.0"
 
     # Size thresholds
-    Thresholds = @{
-        CleanupMin      = 100MB     # Minimum size for cleanup suggestions
-        DuplicateMin    = 10MB      # Minimum file size for duplicate detection
-        LargeFile       = 100MB     # Files above this shown in results
-        DangerWasted    = 500MB     # Wasted space threshold for "danger" severity
-        WarningWasted   = 100MB     # Wasted space threshold for "warning" severity
-        ErrorWarning    = 50        # Show warning if more than X files couldn't be read
+    Thresholds     = @{
+        CleanupMin    = 100MB     # Minimum size for cleanup suggestions
+        DuplicateMin  = 10MB      # Minimum file size for duplicate detection
+        LargeFile     = 100MB     # Files above this shown in results
+        DangerWasted  = 500MB     # Wasted space threshold for "danger" severity
+        WarningWasted = 100MB     # Wasted space threshold for "warning" severity
+        ErrorWarning  = 50        # Show warning if more than X files couldn't be read
     }
 
     # Display limits
-    Display = @{
+    Display        = @{
         MaxDuplicateGroups = 20     # Max duplicate groups to display
         MaxPathsPerGroup   = 5      # Max paths shown per duplicate group
         MaxTopFolders      = 8      # Top folders in bar chart
@@ -26,7 +26,7 @@ $script:Config = @{
     }
 
     # Disk health thresholds (percent)
-    DiskHealth = @{
+    DiskHealth     = @{
         CriticalPercent = 90
         WarningPercent  = 75
     }
@@ -40,7 +40,7 @@ $script:Config = @{
     }
 
     # Theme: centralized colors and icons
-    Theme = @{
+    Theme          = @{
         Colors = @{
             Danger   = "#d9534f"
             Warning  = "#f0ad4e"
@@ -51,31 +51,31 @@ $script:Config = @{
             Critical = "#FF6B6B"
             Free     = "#95a5a6"
         }
-        Icons = @{
+        Icons  = @{
             # Status icons
-            Info       = "fa-solid fa-circle-info"
-            Warning    = "fa-solid fa-triangle-exclamation"
-            Error      = "fa-solid fa-circle-exclamation"
-            Success    = "fa-solid fa-circle-check"
+            Info        = "fa-solid fa-circle-info"
+            Warning     = "fa-solid fa-triangle-exclamation"
+            Error       = "fa-solid fa-circle-exclamation"
+            Success     = "fa-solid fa-circle-check"
             # Object icons
-            Folder     = "fas fa-folder"
-            File       = "fas fa-file"
-            FileAlt    = "fas fa-file-alt"
-            Drive      = "fas fa-hdd"
-            List       = "fas fa-list"
-            Chart      = "fas fa-chart-bar"
-            Copy       = "fas fa-copy"
-            Broom      = "fas fa-broom"
-            Search     = "fas fa-search"
+            Folder      = "fas fa-folder"
+            File        = "fas fa-file"
+            FileAlt     = "fas fa-file-alt"
+            Drive       = "fas fa-hdd"
+            List        = "fas fa-list"
+            Chart       = "fas fa-chart-bar"
+            Copy        = "fas fa-copy"
+            Broom       = "fas fa-broom"
+            Search      = "fas fa-search"
             CheckCircle = "fas fa-check-circle"
             # Category icons
-            Trash      = "fas fa-trash"
-            Clock      = "fas fa-clock"
-            Database   = "fas fa-database"
-            Code       = "fas fa-code"
-            CodeBranch = "fas fa-code-branch"
-            Download   = "fas fa-download"
-            Cog        = "fas fa-cog"
+            Trash       = "fas fa-trash"
+            Clock       = "fas fa-clock"
+            Database    = "fas fa-database"
+            Code        = "fas fa-code"
+            CodeBranch  = "fas fa-code-branch"
+            Download    = "fas fa-download"
+            Cog         = "fas fa-cog"
         }
     }
 }

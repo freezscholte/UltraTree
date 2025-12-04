@@ -33,9 +33,9 @@ function New-HtmlDuplicatesTable {
         $fileName = Split-Path $group.Files[0] -Leaf
 
         $pathList = ($filesToShow | ForEach-Object {
-            $parentPath = Split-Path $_ -Parent
-            if ($parentPath.Length -gt $maxPathLen) { "..." + $parentPath.Substring($parentPath.Length - ($maxPathLen - 3)) } else { $parentPath }
-        }) -join "<br>"
+                $parentPath = Split-Path $_ -Parent
+                if ($parentPath.Length -gt $maxPathLen) { "..." + $parentPath.Substring($parentPath.Length - ($maxPathLen - 3)) } else { $parentPath }
+            }) -join "<br>"
 
         if ($remaining -gt 0) {
             $mutedColor = Get-ThemeColor -Severity "Muted"

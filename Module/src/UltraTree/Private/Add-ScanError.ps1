@@ -18,9 +18,9 @@ function Add-ScanError {
         [string]$Message = ""
     )
     $script:ErrorLog.Add([PSCustomObject]@{
-        Timestamp = Get-Date
-        Path      = $Path
-        Category  = $Category
-        Message   = $Message
-    })
+            Timestamp = Get-Date
+            Path      = $Path
+            Category  = $Category
+            Message   = $Message
+        })
 }
