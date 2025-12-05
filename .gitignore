@@ -33,3 +33,12 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Generated HTML reports
+DiskReport.html
+treesize-output.html
+*.html
+!Module/docs/**/*.html
+
+# Test scripts (local only)
+Test2.ps1

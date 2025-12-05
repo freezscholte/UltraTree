@@ -81,6 +81,54 @@ $html | Out-File -FilePath "C:\Reports\DiskReport.html" -Encoding UTF8
 
 ---
 
+## Output Formats
+
+UltraTree supports multiple output formats for different use cases:
+
+### PowerShell Object (Default)
+
+Access scan results programmatically:
+
+```powershell
+$results = Get-FolderSizes -DriveLetter C
+
+# Access specific data
+$results.DriveInfo          # Drive capacity/usage
+$results.Items              # Top folders/files by size
+$results.CleanupSuggestions # Cleanup opportunities
+$results.Duplicates         # Duplicate file groups (if -FindDuplicates)
+```
+
+### JSON Export
+
+Export for logging, APIs, or external tools:
+
+```powershell
+$results = Get-FolderSizes -DriveLetter C
+$results | ConvertTo-Json -Depth 5 | Out-File "report.json" -Encoding UTF8
+```
+
+### HTML for NinjaOne
+
+Generate HTML fragment for WYSIWYG custom fields (NinjaOne already includes Bootstrap/Charts.css):
+
+```powershell
+$results | ConvertTo-NinjaOneHtml | Ninja-Property-Set-Piped treesize
+```
+
+### Full HTML (Local Viewing)
+
+Wrap with Bootstrap 5, Font Awesome 6, and Charts.css for standalone HTML files:
+
+```powershell
+$html = $results | ConvertTo-NinjaOneHtml
+$wrapped = New-HtmlWrapper -Content $html -Title "Disk Report"
+$wrapped | Out-File "report.html" -Encoding UTF8
+# Open report.html in any browser
+```
+
+---
+
 ## Function Reference
 
 ### Get-FolderSizes
@@ -179,6 +227,40 @@ Get-FolderSizes -AllDrives -FindDuplicates |
 
 ---
 
+### New-HtmlWrapper
+
+Wraps HTML fragment with full document structure including CSS dependencies for local viewing.
+
+#### Syntax
+
+```powershell
+New-HtmlWrapper [-Content] <String> [-Title <String>]
+```
+
+#### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| **Content** | String | - | HTML content from `ConvertTo-NinjaOneHtml` |
+| **Title** | String | "TreeSize Report" | Page title for browser tab |
+
+#### Example
+
+```powershell
+$html = Get-FolderSizes -DriveLetter C | ConvertTo-NinjaOneHtml
+$wrapped = New-HtmlWrapper -Content $html -Title "C: Drive Report"
+$wrapped | Out-File "report.html" -Encoding UTF8
+# Open report.html in browser
+```
+
+#### Notes
+
+- Includes Bootstrap 5, Font Awesome 6, and Charts.css
+- Use for local testing, email attachments, or standalone HTML reports
+- NinjaOne WYSIWYG fields already include these dependencies, so use `ConvertTo-NinjaOneHtml` directly
+
+---
+
 ## Return Object Structure
 
 `Get-FolderSizes` returns a `PSCustomObject` with the following properties:
@@ -262,73 +344,62 @@ UltraTree is designed for seamless integration with NinjaOne RMM. The HTML outpu
 #### Basic Script
 
 ```powershell
-# UltraTree NinjaOne Script
-# Scans all drives and sets the TreeSize custom field
-
+# UltraTree NinjaOne Script - auto-installs if needed
+if (-not (Get-Module -ListAvailable -Name UltraTree)) {
+    Install-Module -Name UltraTree -Scope AllUsers -Force -AllowClobber
+}
 Import-Module UltraTree -Force
 
-$results = Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50
-$html = $results | ConvertTo-NinjaOneHtml
-
-# Set the custom field (change 'treesize' to match your field name)
-$html | Ninja-Property-Set-Piped treesize
+Get-FolderSizes -AllDrives -FindDuplicates |
+    ConvertTo-NinjaOneHtml |
+    Ninja-Property-Set-Piped treesize
 ```
 
-#### Advanced Script with Error Handling and Alerts
+#### Production Script (With Error Handling)
 
 ```powershell
 #Requires -Version 5.1
 #Requires -RunAsAdministrator
 
-<#
-.SYNOPSIS
-    UltraTree disk analysis for NinjaOne
-.DESCRIPTION
-    Scans all drives for disk usage, duplicates, and cleanup opportunities.
-    Results are stored in the TreeSize custom field.
-    Critical disk usage triggers an alert via the diskAlert field.
-#>
-
 try {
-    # Import the module
-    Import-Module UltraTree -ErrorAction Stop
+    # Install module if not present
+    if (-not (Get-Module -ListAvailable -Name UltraTree)) {
+        Write-Output "Installing UltraTree from PowerShell Gallery..."
+        Install-Module -Name UltraTree -Scope AllUsers -Force -AllowClobber
+    }
+    Import-Module UltraTree -Force -ErrorAction Stop
 
-    # Run the scan
+    # Run the scan and set custom field
     $results = Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50
+    $results | ConvertTo-NinjaOneHtml | Ninja-Property-Set-Piped treesize
 
-    # Generate and set the HTML report
-    $html = $results | ConvertTo-NinjaOneHtml
-    $html | Ninja-Property-Set-Piped treesize
-
-    # Check for critical disk usage (>90%)
-    $criticalDrives = $results.DriveInfo | Where-Object { $_.UsedPercent -gt 90 }
-
-    if ($criticalDrives) {
-        $driveList = ($criticalDrives | ForEach-Object {
-            "$($_.Drive) ($([math]::Round($_.UsedPercent, 1))%)"
-        }) -join ', '
-        Ninja-Property-Set diskAlert "CRITICAL: $driveList"
-    }
-    else {
-        # Clear alert if no critical drives
-        Ninja-Property-Set diskAlert ""
-    }
-
-    # Check for significant duplicate waste (>1GB)
-    if ($results.TotalDuplicateWasted -gt 1GB) {
+    # Log summary
+    Write-Output "Scan complete: $($results.TotalFiles) files, $($results.TotalFolders) folders"
+    if ($results.TotalDuplicateWasted -gt 0) {
         $wastedGB = [math]::Round($results.TotalDuplicateWasted / 1GB, 2)
-        Write-Output "Warning: ${wastedGB}GB wasted on duplicate files"
+        Write-Output "Duplicate waste: ${wastedGB} GB"
     }
-
-    Write-Output "UltraTree scan completed successfully"
-    Write-Output "Total files scanned: $($results.TotalFiles)"
-    Write-Output "Total folders scanned: $($results.TotalFolders)"
     exit 0
 }
 catch {
-    Write-Error "UltraTree scan failed: $_"
+    Write-Error "UltraTree failed: $_"
     exit 1
 }
+```
+
+#### Lightweight Script (No Duplicates)
+
+For faster scans without duplicate detection:
+
+```powershell
+if (-not (Get-Module -ListAvailable -Name UltraTree)) {
+    Install-Module -Name UltraTree -Scope AllUsers -Force -AllowClobber
+}
+Import-Module UltraTree -Force
+
+Get-FolderSizes -AllDrives -MaxDepth 3 -Top 30 |
+    ConvertTo-NinjaOneHtml |
+    Ninja-Property-Set-Piped treesize
 ```
 
 ### Step 3: Deploy the Script
@@ -352,18 +423,6 @@ catch {
    - **Schedule**: Weekly (recommended) or Daily
    - **Run As**: System (required for full disk access)
 5. Apply the policy to target devices
-
-### Step 5: Configure Alerts (Optional)
-
-To receive notifications when drives reach critical capacity:
-
-1. Go to **Administration** → **Library** → **Conditions**
-2. Create a new condition:
-   - **Name**: `Disk Space Critical`
-   - **Type**: Custom Field
-   - **Field**: `diskAlert`
-   - **Condition**: Contains "CRITICAL"
-3. Attach the condition to a notification channel
 
 ### Viewing Results
 
