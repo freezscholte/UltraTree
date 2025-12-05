@@ -121,9 +121,12 @@ $results | ConvertTo-NinjaOneHtml | Ninja-Property-Set-Piped treesize
 Wrap with Bootstrap 5, Font Awesome 6, and Charts.css for standalone HTML files:
 
 ```powershell
-$html = $results | ConvertTo-NinjaOneHtml
-$wrapped = New-HtmlWrapper -Content $html -Title "Disk Report"
-$wrapped | Out-File "report.html" -Encoding UTF8
+# Full pipeline - scan, convert, wrap, save
+Get-FolderSizes -AllDrives -FindDuplicates |
+    ConvertTo-NinjaOneHtml |
+    New-HtmlWrapper -Title "Disk Report" |
+    Out-File "report.html" -Encoding UTF8
+
 # Open report.html in any browser
 ```
 
@@ -229,7 +232,7 @@ Get-FolderSizes -AllDrives -FindDuplicates |
 
 ### New-HtmlWrapper
 
-Wraps HTML fragment with full document structure including CSS dependencies for local viewing.
+Wraps HTML fragment with full document structure including CSS dependencies for local viewing. Supports pipeline input.
 
 #### Syntax
 
@@ -241,21 +244,30 @@ New-HtmlWrapper [-Content] <String> [-Title <String>]
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| **Content** | String | - | HTML content from `ConvertTo-NinjaOneHtml` |
+| **Content** | String | - | HTML content from `ConvertTo-NinjaOneHtml`. Accepts pipeline input. |
 | **Title** | String | "TreeSize Report" | Page title for browser tab |
 
-#### Example
+#### Examples
 
+**Pipeline usage (recommended):**
+```powershell
+Get-FolderSizes -AllDrives |
+    ConvertTo-NinjaOneHtml |
+    New-HtmlWrapper -Title "Disk Report" |
+    Out-File "report.html" -Encoding UTF8
+```
+
+**Traditional usage:**
 ```powershell
 $html = Get-FolderSizes -DriveLetter C | ConvertTo-NinjaOneHtml
 $wrapped = New-HtmlWrapper -Content $html -Title "C: Drive Report"
 $wrapped | Out-File "report.html" -Encoding UTF8
-# Open report.html in browser
 ```
 
 #### Notes
 
 - Includes Bootstrap 5, Font Awesome 6, and Charts.css
+- Supports pipeline input from `ConvertTo-NinjaOneHtml`
 - Use for local testing, email attachments, or standalone HTML reports
 - NinjaOne WYSIWYG fields already include these dependencies, so use `ConvertTo-NinjaOneHtml` directly
 

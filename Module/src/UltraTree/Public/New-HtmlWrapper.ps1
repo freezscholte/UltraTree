@@ -4,17 +4,26 @@ function New-HtmlWrapper {
         Wraps HTML fragment with full document including CSS/JS dependencies.
     .DESCRIPTION
         Use for local testing - NinjaOne WYSIWYG fields already have these loaded.
+        Supports pipeline input from ConvertTo-NinjaOneHtml.
     .PARAMETER Content
-        The HTML content to wrap.
+        The HTML content to wrap. Accepts pipeline input.
     .PARAMETER Title
         The page title (default: "TreeSize Report").
+    .EXAMPLE
+        $html = Get-FolderSizes -DriveLetter C | ConvertTo-NinjaOneHtml
+        $wrapped = New-HtmlWrapper -Content $html -Title "C: Drive Report"
+    .EXAMPLE
+        Get-FolderSizes -AllDrives | ConvertTo-NinjaOneHtml | New-HtmlWrapper | Out-File "report.html"
     #>
+    [CmdletBinding()]
     param (
+        [Parameter(ValueFromPipeline)]
         [string]$Content,
         [string]$Title = "TreeSize Report"
     )
 
-    @"
+    process {
+        @"
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -189,4 +198,5 @@ function New-HtmlWrapper {
 </body>
 </html>
 "@
+    }
 }
