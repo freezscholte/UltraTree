@@ -46,16 +46,16 @@ Import-Module UltraTree -Force
 
 ```powershell
 # Scan C: drive
-$results = Get-FolderSizes -DriveLetter C
+Get-FolderSizes -DriveLetter C
 
 # Scan all drives with duplicate detection
-$results = Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50
+Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50
 
-# Generate HTML report
-$html = $results | ConvertTo-NinjaOneHtml
-
-# Save to file
-$html | Out-File "DiskReport.html" -Encoding UTF8
+# Full pipeline - scan, convert, wrap, save as standalone HTML
+Get-FolderSizes -AllDrives -FindDuplicates |
+    ConvertTo-NinjaOneHtml |
+    New-HtmlWrapper -Title "Disk Report" |
+    Out-File "DiskReport.html" -Encoding UTF8
 ```
 
 ---
@@ -65,9 +65,51 @@ $html | Out-File "DiskReport.html" -Encoding UTF8
 UltraTree is designed for NinjaOne RMM. Set the HTML report directly to a WYSIWYG custom field:
 
 ```powershell
-$results = Get-FolderSizes -AllDrives -FindDuplicates
-$html = $results | ConvertTo-NinjaOneHtml
-$html | Ninja-Property-Set-Piped treesize
+# Basic - auto-installs if needed
+if (-not (Get-Module -ListAvailable -Name UltraTree)) {
+    Install-Module -Name UltraTree -Scope AllUsers -Force -AllowClobber
+}
+Import-Module UltraTree -Force
+
+Get-FolderSizes -AllDrives -FindDuplicates |
+    ConvertTo-NinjaOneHtml |
+    Ninja-Property-Set-Piped treesize
+```
+
+### With Auto-Update
+
+```powershell
+#Requires -Version 5.1
+#Requires -RunAsAdministrator
+
+try {
+    $moduleName = "UltraTree"
+    $installed = Get-Module -ListAvailable -Name $moduleName | Sort-Object Version -Descending | Select-Object -First 1
+
+    if (-not $installed) {
+        Write-Output "Installing $moduleName..."
+        Install-Module -Name $moduleName -Scope AllUsers -Force -AllowClobber
+    }
+    else {
+        $latest = Find-Module -Name $moduleName -ErrorAction SilentlyContinue
+        if ($latest -and $latest.Version -gt $installed.Version) {
+            Write-Output "Updating $moduleName to $($latest.Version)..."
+            Update-Module -Name $moduleName -Force
+        }
+    }
+
+    Import-Module $moduleName -Force -ErrorAction Stop
+
+    Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50 |
+        ConvertTo-NinjaOneHtml |
+        Ninja-Property-Set-Piped treesize
+
+    exit 0
+}
+catch {
+    Write-Error "UltraTree failed: $_"
+    exit 1
+}
 ```
 
 ---
