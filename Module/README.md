@@ -399,6 +399,54 @@ catch {
 }
 ```
 
+#### Production Script (With Auto-Update)
+
+Automatically updates to the latest version from PowerShell Gallery:
+
+```powershell
+#Requires -Version 5.1
+#Requires -RunAsAdministrator
+
+try {
+    $moduleName = "UltraTree"
+    $installed = Get-Module -ListAvailable -Name $moduleName | Sort-Object Version -Descending | Select-Object -First 1
+
+    if (-not $installed) {
+        # First-time install
+        Write-Output "Installing $moduleName from PowerShell Gallery..."
+        Install-Module -Name $moduleName -Scope AllUsers -Force -AllowClobber
+    }
+    else {
+        # Check for updates
+        $latest = Find-Module -Name $moduleName -ErrorAction SilentlyContinue
+        if ($latest -and $latest.Version -gt $installed.Version) {
+            Write-Output "Updating $moduleName from $($installed.Version) to $($latest.Version)..."
+            Update-Module -Name $moduleName -Force
+        }
+    }
+
+    Import-Module $moduleName -Force -ErrorAction Stop
+
+    # Run the scan and set custom field
+    $results = Get-FolderSizes -AllDrives -FindDuplicates -MaxDepth 5 -Top 50
+    $results | ConvertTo-NinjaOneHtml | Ninja-Property-Set-Piped treesize
+
+    # Log summary
+    Write-Output "Scan complete: $($results.TotalFiles) files, $($results.TotalFolders) folders"
+    if ($results.TotalDuplicateWasted -gt 0) {
+        $wastedGB = [math]::Round($results.TotalDuplicateWasted / 1GB, 2)
+        Write-Output "Duplicate waste: ${wastedGB} GB"
+    }
+    exit 0
+}
+catch {
+    Write-Error "UltraTree failed: $_"
+    exit 1
+}
+```
+
+> **Note:** Requires internet access to check PSGallery. If offline, continues with installed version.
+
 #### Lightweight Script (No Duplicates)
 
 For faster scans without duplicate detection:
