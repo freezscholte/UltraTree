@@ -41,4 +41,5 @@ treesize-output.html
 !Module/docs/**/*.html
 
 # Test scripts (local only)
+Test.ps1
 Test2.ps1
