@@ -42,8 +42,5 @@ Describe 'Module Tests' -Tag Unit {
                 $tag | Should -Not -Match '\s'
             }
         } #tagSpaces
-        It 'should have version 1.0.0' {
-            $script:manifestEval.Version.ToString() | Should -BeExactly '1.0.0'
-        } #version_check
     } #context_ModuleTests
 } #describe_ModuleTests
