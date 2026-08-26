@@ -1,4 +1,4 @@
-function New-HtmlCleanupSuggestions {
+﻿function New-HtmlCleanupSuggestions {
     <#
     .SYNOPSIS
         Creates cleanup suggestions display with categorization.
@@ -9,14 +9,15 @@ function New-HtmlCleanupSuggestions {
     .PARAMETER Compact
         Switch to use compact list format instead of full cards.
     #>
+    [CmdletBinding()]
     param (
         [array]$Suggestions,
         [switch]$Compact
     )
 
-    if ($null -eq $Suggestions -or $Suggestions.Count -eq 0) { return "" }
+    if ($null -eq $Suggestions -or $Suggestions.Count -eq 0) { return '' }
 
-    $broomIcon = Get-ThemeIcon -IconName "Broom"
+    $broomIcon = Get-ThemeIcon -IconName 'Broom'
 
     if ($Compact) {
         $items = foreach ($sug in $Suggestions) {
@@ -25,7 +26,7 @@ function New-HtmlCleanupSuggestions {
             $category = $script:CleanupCategories | Where-Object { $_.Name -eq $sug.Category }
             $displayName = if ($category) { $category.DisplayName } else { $sug.Path }
 
-            "<li style=`"margin-bottom: 8px;`"><i class=`"$($catInfo.Icon)`" style=`"color: $($catInfo.Color); margin-right: 8px;`"></i><strong>$displayName</strong><br><span style=`"font-size: 0.9em; color: #666;`">$sizeText</span></li>"
+            "<li style=`"margin-bottom: 8px;`"><i class=`"$($catInfo.Icon)`" style=`"color: $($catInfo.Color); margin-right: 8px;`"></i><strong>$displayName</strong><br><span class=`"stat-desc`" style=`"font-size: 0.9em;`">$sizeText</span></li>"
         }
 
         $body = @"
@@ -33,7 +34,7 @@ function New-HtmlCleanupSuggestions {
       $($items -join "`n      ")
     </ul>
 "@
-        New-HtmlCard -Title "Cleanup" -Icon $broomIcon -Body $body -BodyStyle "padding: 12px;"
+        New-HtmlCard -Title 'Cleanup' -Icon $broomIcon -Body $body -BodyStyle 'padding: 12px;'
     }
     else {
         $cards = foreach ($sug in $Suggestions) {
@@ -41,12 +42,12 @@ function New-HtmlCleanupSuggestions {
             $category = $script:CleanupCategories | Where-Object { $_.Name -eq $sug.Category }
             $displayName = if ($category) { $category.DisplayName } else { $sug.Path }
             $description = if ($category) { $category.Description } else { $sug.Description }
-            $severity = if ($category) { $category.Severity } else { "Info" }
+            $severity = if ($category) { $category.Severity } else { 'Info' }
 
             New-HtmlInfoCard -Title "$displayName`: $sizeText" -Description $description -Type $severity
         }
 
         $body = $cards -join "`n    "
-        New-HtmlCard -Title "Cleanup Suggestions" -Icon $broomIcon -Body $body -CardStyle "margin-bottom: 16px;"
+        New-HtmlCard -Title 'Cleanup Suggestions' -Icon $broomIcon -Body $body -CardStyle 'margin-bottom: 16px;'
     }
 }

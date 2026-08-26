@@ -1,4 +1,4 @@
-function New-HtmlLineChart {
+﻿function New-HtmlLineChart {
     <#
     .SYNOPSIS
         Creates a line/segment chart showing disk usage.
@@ -9,6 +9,7 @@ function New-HtmlLineChart {
     .PARAMETER Total
         The total value for calculating percentages.
     #>
+    [CmdletBinding()]
     param (
         [array]$Segments,
         [long]$Total

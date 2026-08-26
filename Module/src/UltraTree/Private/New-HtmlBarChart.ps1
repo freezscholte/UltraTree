@@ -1,4 +1,4 @@
-function New-HtmlBarChart {
+﻿function New-HtmlBarChart {
     <#
     .SYNOPSIS
         Creates a horizontal bar chart using Charts.css.
@@ -9,6 +9,7 @@ function New-HtmlBarChart {
     .PARAMETER Title
         The chart title.
     #>
+    [CmdletBinding()]
     param (
         [array]$Items,
         [string]$Title = "Top Items"

@@ -1,4 +1,4 @@
-function New-HtmlCard {
+﻿function New-HtmlCard {
     <#
     .SYNOPSIS
         Base card template - other card functions should use this.
@@ -15,6 +15,7 @@ function New-HtmlCard {
     .PARAMETER CardStyle
         Optional inline CSS for the card element.
     #>
+    [CmdletBinding()]
     param (
         [string]$Title,
         [string]$Icon = "",

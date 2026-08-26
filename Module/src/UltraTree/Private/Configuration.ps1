@@ -1,9 +1,7 @@
-# UltraTree Module Configuration
+﻿# UltraTree Module Configuration
 # Centralized configuration with nested theme/thresholds
 
 $script:Config = @{
-    Version        = "1.0.0"
-
     # Size thresholds
     Thresholds     = @{
         CleanupMin    = 100MB     # Minimum size for cleanup suggestions
@@ -18,7 +16,8 @@ $script:Config = @{
     Display        = @{
         MaxDuplicateGroups = 20     # Max duplicate groups to display
         MaxPathsPerGroup   = 5      # Max paths shown per duplicate group
-        MaxTopFolders      = 8      # Top folders in bar chart
+        MaxTopFolders      = 25     # Top folders in ranked table
+        MaxTopFiles        = 50     # Top files in ranked table
         MaxFileTypes       = 10     # Top file types to show
         MaxResults         = 40     # Max items in results table
         MaxPathLength      = 50     # Truncate paths longer than this

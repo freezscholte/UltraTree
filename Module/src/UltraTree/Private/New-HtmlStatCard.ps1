@@ -1,4 +1,4 @@
-function New-HtmlStatCard {
+﻿function New-HtmlStatCard {
     <#
     .SYNOPSIS
         Creates a stat card with value, description, and optional icon.
@@ -13,6 +13,7 @@ function New-HtmlStatCard {
     .PARAMETER Icon
         Optional FontAwesome icon class.
     #>
+    [CmdletBinding()]
     param (
         [string]$Value,
         [string]$Description,
